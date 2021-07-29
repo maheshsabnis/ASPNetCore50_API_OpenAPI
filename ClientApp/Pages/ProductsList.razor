@@ -1,0 +1,58 @@
+﻿@page "/productslist"
+@using ClientNS
+@inject HttpClient httpClient;
+@inject NavigationManager navigationManager
+
+<h2>List of Products</h2>
+<div class="container">
+    <input type="button" value="Add Product" class="btn btn-danger" @onclick="navigateToAdd">
+    <table class="table table-bordered table-striped table-dark">
+        <thead>
+           <tr>
+               <th>Product Row Id</th>
+               <th>Product Id</th>
+               <th>Product Name</th>
+               <th>Category Name</th>
+               <th>Description</th>
+               <th>Manufacturer</th>
+               <th>Price</th>
+           </tr>
+        </thead>
+        <tbody>
+            @foreach(var record in products)
+            {
+              <tr>
+                  <td>@record.ProductRowId</td>
+                  <td>@record.ProductId</td>
+                  <td>@record.ProductName</td>
+                  <td>@record.CategoryName</td>
+                  <td>@record.Manufacturer</td>
+                  <td>@record.Description</td>
+                  <td>@record.Price</td>
+              </tr>  
+            }
+        </tbody>
+    </table>  
+</div>     
+
+@code {
+    private List<ProductsInfo> products;
+    private ClientProxy proxy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = new List<ProductsInfo>();
+        proxy = new ClientProxy("http://localhost:55071/", httpClient);
+        var result = await proxy.GetallAsync();
+        products = result.ToList();
+    }
+    void navigateToAdd()
+    {
+        navigationManager.NavigateTo("/createproducts");
+    }
+
+    protected override bool ShouldRender()
+    {
+        return true;
+    }
+}
